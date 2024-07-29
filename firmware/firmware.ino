@@ -105,6 +105,7 @@ class ServerHandler : public BLEServerCallbacks
   void onConnect(BLEServer *server)
   {
     Serial.println("blue tooth connected");
+    handlePhotoControl(5);
     connected = true;
   }
 
