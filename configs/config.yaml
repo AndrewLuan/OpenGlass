@@ -1,0 +1,70 @@
+# 全局变量
+DEVICE_ADDRESS: CC:8D:A2:0D:82:71
+SERVICE_UUID: 19b10000-e8f2-537e-4f6c-d104768a1214  # 全部小写
+CHARACTERISTIC_UUID: 19B10005-E8F2-537E-4F6C-D104768A1214
+image_data: []  # bytearray 无法直接转换为 YAML，这里将其表示为空列表
+expected_frame: 0
+
+# 预先加载的数据和映射
+subjects:
+  - arm
+  - light
+  - dog
+  - printer
+  - tree
+  - picture
+  - extinguisher
+  - sofa
+  - woodenchair
+  - table
+  - chair
+data: "np.load(\"data.npy\")"  # numpy 数组无法直接转换为 YAML，这里将其表示为字符串
+mapping:
+  arm: sound/robot_arm.mp3
+  dog: sound/dog.mp3
+  light: sound/light.mp3
+  tree: sound/tree.mp3
+  printer: sound/printer.mp3
+
+audio_folder: ./sound
+is_playing: false
+play_thread: null
+pre_image_hist: null
+pre_subject: null
+target_device: AirPods
+
+# 音频参数
+CHUNK: 1024
+FORMAT: "pyaudio.paInt16"  # pyaudio 常量无法直接转换为 YAML，这里将其表示为字符串
+CHANNELS: 1
+RATE: 16000
+RECORD_SECONDS: 5
+
+# PyAudio 初始化
+p: "pyaudio.PyAudio()"  # PyAudio 对象无法直接转换为 YAML，这里将其表示为字符串
+record_status: false
+is_quit: false
+recorded_frames: []
+recorded_wav: null
+is_asking: false
+output_device_idx: null
+
+rtsp_url: rtsp://192.168.234.1:554/h265/ch1/main/av_stream
+photo: null
+interval: 1
+
+vad_triggered: false
+webRTC_aggressiveness: 3
+nospinner: true
+input_device_idx: null
+silaro_model_name: "silero_vad"
+reload: false
+trig_sum: 0.25
+neg_trig_sum: 0.07
+num_steps: 8
+num_samples_per_window: 4000
+min_speech_samples: 10000
+min_silence_samples: 500
+
+glass_threshold: 0.1
+esp32_threshold: 0.2

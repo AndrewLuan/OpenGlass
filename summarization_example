@@ -1,0 +1,12 @@
+from chronological import read_prompt, cleaned_completion, main
+
+async def summarization_example():
+    prompt_summarize = read_prompt('summarize') # takes in a text file as the input prompt
+    completion_summarize = await cleaned_completion(prompt_summarize, max_tokens=100, engine= "davinci", temperature = 0.5, top_p= 1, frequency_penalty= 0.2, stop=["\n\n"])
+    return completion_summarize
+
+async def workflow():
+    text_summ_example = await summarization_example()
+    print('----------')
+    print('Basic response:{0}'.format(text_summ_example))
+    print('----------')
