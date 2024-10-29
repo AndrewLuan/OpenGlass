@@ -27,7 +27,9 @@
     "react-dom": "18.2.0",
     "react-native": "^0.74.1",
     "react-native-ble-plx": "^3.1.2",
+    "react-native-gesture-handler": "^2.20.2",
     "react-native-quick-base64": "^2.0.8",
+    "react-native-reanimated": "^3.16.1",
     "react-native-typography": "^1.4.1",
     "react-native-web": "~0.19.6",
     "react-native-websocket": "^1.0.2"

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ActivityIndicator, Image, ScrollView, Text, TextInput, View, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, Image, ScrollView, Text, TextInput, View, TouchableOpacity} from 'react-native';
 import { toBase64Image } from '../utils/base64';
 import { Agent } from '../agent/Agent';
 import { InvalidateSync } from '../utils/invalidateSync';
@@ -7,6 +7,9 @@ import { textToSpeech } from '../modules/openai';
 import { rotateImage } from '../modules/imaging';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';  // You'll need to install file-saver as well: npm install file-saver
+import { PanGestureHandler, GestureHandlerRootView } from 'react-native-gesture-handler';
+import {Animated, PanResponder,} from 'react-native';
+
 
 
 function usePhotos(device: BluetoothRemoteGATTServer) {
@@ -216,11 +219,31 @@ export const DeviceView = React.memo((props: { device: BluetoothRemoteGATTServer
         const content = await zip.generateAsync({ type: 'blob' });
         saveAs(content, 'photos.zip');
     };
+        // For draggable and resizable dialog
+        const dialogPosition = React.useRef(new Animated.ValueXY({ x: 0, y: 0 })).current;
+        const [dialogWidth, setDialogWidth] = React.useState(600);
+        const [dialogHeight, setDialogHeight] = React.useState(600);
+    
+        // PanResponder for drag
+        const panResponder = React.useMemo(() => PanResponder.create({
+            onStartShouldSetPanResponder: () => true,
+            onPanResponderMove: Animated.event([null, { dx: dialogPosition.x, dy: dialogPosition.y }], { useNativeDriver: false }),
+            onPanResponderRelease: (_, gestureState) => {
+                // Update position to final location
+                dialogPosition.extractOffset();
+                
+            }
+        }), []);
+    
+        // Font size based on dialog size
+        const fontSize = Math.max(16, dialogWidth / 20);
 
+
+        
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
-            <TouchableOpacity style={{ backgroundColor: '#1f4888', padding: 10, borderRadius: 5, marginTop: 20 }} onPress={downloadAllPhotos}>
+                <TouchableOpacity style={{ backgroundColor: '#1f4888', padding: 10, borderRadius: 5, marginTop: 20 }} onPress={downloadAllPhotos}>
                     <Text style={{ color: 'white' }}>Download All Photos</Text>
                 </TouchableOpacity>
                 <ScrollView style={{ flex: 1 }}>
@@ -241,22 +264,74 @@ export const DeviceView = React.memo((props: { device: BluetoothRemoteGATTServer
                             </View>
                         ))}
                     </View>
-                </ScrollView>                
+                </ScrollView>
             </View>
 
-            <View style={{ backgroundColor: 'rgb(28 28 28)', height: 600, width: 600, borderRadius: 64, flexDirection: 'column', padding: 64 }}>
+            {/* Draggable and Resizable Dialog */}
+            <Animated.View
+                {...panResponder.panHandlers}
+                style={{
+                    backgroundColor: 'rgb(28 28 28)',
+                    borderRadius: 64,
+                    padding: 64,
+                    position: 'absolute',
+                    transform: [{ translateX: dialogPosition.x }, { translateY: dialogPosition.y }],
+                    width: dialogWidth,
+                    height: dialogHeight,
+                }}
+            >
                 <View style={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
                     {agentState.loading && (<ActivityIndicator size="large" color={"white"} />)}
-                    {agentState.answer && !agentState.loading && (<ScrollView style={{ flexGrow: 1, flexBasis: 0 }}><Text style={{ color: 'white', fontSize: 32 }}>{agentState.answer}</Text></ScrollView>)}
+                    {agentState.answer && !agentState.loading && (
+                        <ScrollView style={{ flexGrow: 1, flexBasis: 0 }}>
+                            <Text style={{ color: 'white', fontSize: fontSize }}>{agentState.answer}</Text>
+                        </ScrollView>
+                    )}
                 </View>
-                <TextInput
-                    style={{ color: 'white', height: 64, fontSize: 32, borderRadius: 16, backgroundColor: 'rgb(48 48 48)', padding: 16 }}
-                    placeholder='How can I help you?'
-                    placeholderTextColor={'#888'}
-                    readOnly={agentState.loading}
-                    onSubmitEditing={(e) => agent.answer(e.nativeEvent.text)}
+
+                <View style={{
+                    flexDirection: 'column', 
+                    alignItems: 'center', 
+                    marginLeft: 0,  // 设置与对话框左边的距离
+                }}>
+                    <TextInput
+                        style={{
+                            color: 'white',
+                            height: dialogHeight * 0.1, // 根据对话框高度调整文本框高度
+                            width: dialogWidth * 0.8,  // 根据对话框宽度调整文本框宽度
+                            fontSize: Math.max(16, dialogHeight * 0.05), // 根据对话框高度动态调整字体大小
+                            borderRadius: 16,
+                            backgroundColor: 'rgb(48 48 48)',
+                            padding: 6,
+                            
+                        }}
+                        placeholder='How can I help you?'
+                        placeholderTextColor={'#888'}
+                        readOnly={agentState.loading}
+                        onSubmitEditing={(e) => agent.answer(e.nativeEvent.text)}
+                    />
+                </View>
+
+                {/* Resize handle */}
+                <View
+                    style={{
+                        position: 'absolute',
+                        right: 10,
+                        bottom: 10,
+                        width: 20,
+                        height: 20,
+                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                        borderRadius: 5,
+                    }}
+                    {...PanResponder.create({
+                        onStartShouldSetPanResponder: () => true,
+                        onPanResponderMove: (_, gestureState) => {
+                            setDialogWidth(dialogWidth + gestureState.dx);
+                            setDialogHeight(dialogHeight + gestureState.dy);
+                        },
+                    }).panHandlers}
                 />
-            </View>
+            </Animated.View>
         </View>
     );
 });
