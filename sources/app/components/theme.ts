@@ -1,14 +1,14 @@
 export const Theme = {
 
     // Core
-    background: '#000',
+    background: '#002431',
     accent: '#fff',
     divider: '#f0f0f0',
 
     // Text
     text: '#fff',
     textSecondary: '#8E8E90',
-    textInverted: '#000',
+    textInverted: '#002431',
 
     // backgroundAccent: '#FF2E00',
     warninig: '#FF2E00',
