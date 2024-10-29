@@ -220,7 +220,7 @@ export const DeviceView = React.memo((props: { device: BluetoothRemoteGATTServer
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
-            <TouchableOpacity style={{ backgroundColor: 'blue', padding: 10, borderRadius: 5, marginTop: 20 }} onPress={downloadAllPhotos}>
+            <TouchableOpacity style={{ backgroundColor: '#1f4888', padding: 10, borderRadius: 5, marginTop: 20 }} onPress={downloadAllPhotos}>
                     <Text style={{ color: 'white' }}>Download All Photos</Text>
                 </TouchableOpacity>
                 <ScrollView style={{ flex: 1 }}>
@@ -236,7 +236,7 @@ export const DeviceView = React.memo((props: { device: BluetoothRemoteGATTServer
                                     link.click();
                                     document.body.removeChild(link);
                                 }}>
-                                    <Text style={{ color: 'blue', textAlign: 'center' }}>Download</Text>
+                                    <Text style={{ color: '#1f4888', textAlign: 'center' }}>Download</Text>
                                 </TouchableOpacity>
                             </View>
                         ))}
